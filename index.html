@@ -18,7 +18,7 @@
 <style>
   body { margin:0; background:black; }
   .netflix-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease;
   }
   .netflix-card:hover {
     transform: scale(1.15);
@@ -33,46 +33,39 @@
 <script type="text/babel">
 const { useState } = React;
 
-/* ---------- ICONS ---------- */
 const PlayIcon = () => (
   <svg className="w-10 h-10 fill-white" viewBox="0 0 24 24">
     <path d="M8 5v14l11-7z"/>
   </svg>
 );
 
-/* ---------- PASSWORD ---------- */
 const PASSWORD = "memory123";
 
-/* ---------- APP ---------- */
 function App() {
   const [unlocked, setUnlocked] = useState(
     localStorage.getItem("vault_unlocked") === "yes"
   );
   const [input, setInput] = useState("");
 
-  const unlock = () => {
-    if (input === PASSWORD) {
-      localStorage.setItem("vault_unlocked", "yes");
-      setUnlocked(true);
-    } else {
-      alert("Wrong password");
-    }
-  };
-
   if (!unlocked) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-white bg-black">
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
         <div className="bg-neutral-900 p-8 rounded w-80">
           <h1 className="text-2xl mb-4 font-bold">Memory Vault</h1>
           <input
             type="password"
-            placeholder="Enter password"
             value={input}
             onChange={e => setInput(e.target.value)}
+            placeholder="Enter password"
             className="w-full p-2 text-black mb-4"
           />
           <button
-            onClick={unlock}
+            onClick={() => {
+              if (input === PASSWORD) {
+                localStorage.setItem("vault_unlocked", "yes");
+                setUnlocked(true);
+              } else alert("Wrong password");
+            }}
             className="w-full bg-red-600 py-2 rounded font-semibold"
           >
             Enter
@@ -85,13 +78,12 @@ function App() {
   return <Vault />;
 }
 
-/* ---------- VAULT ---------- */
 function Vault() {
   return (
     <div className="text-white">
 
-      {/* NAVBAR */}
-      <header className="fixed top-0 w-full z-50 flex items-center px-10 py-4 bg-gradient-to-b from-black/80 to-transparent">
+      {/* NAV */}
+      <header className="fixed top-0 w-full z-50 px-10 py-4 bg-gradient-to-b from-black/80 to-transparent">
         <h1 className="text-red-600 text-2xl font-extrabold">
           DISHI + HRISHIT
         </h1>
@@ -101,7 +93,7 @@ function Vault() {
       <section
         className="relative h-screen flex items-end"
         style={{
-          backgroundImage: "url('/mnt/data/233f5eb6-a8d7-49d1-899e-3e3922bd1865.png')",
+          backgroundImage: "url('./hero.jpeg')",
           backgroundSize: "cover",
           backgroundPosition: "center"
         }}
@@ -113,12 +105,11 @@ function Vault() {
             To our future kids
           </h2>
           <p className="text-lg text-gray-200 mb-6">
-            Little pieces of our life, preserved exactly as we lived them.
+            Little pieces of our life, saved exactly as we lived them.
           </p>
 
           <button className="flex items-center gap-3 bg-white text-black px-8 py-3 rounded font-bold">
-            <PlayIcon />
-            Play
+            <PlayIcon /> Play
           </button>
         </div>
       </section>
@@ -126,12 +117,11 @@ function Vault() {
       {/* ROW */}
       <section className="px-10 -mt-24 relative z-10">
         <h3 className="text-xl font-bold mb-4">Season 1: The Beginning</h3>
-
         <div className="flex gap-4 overflow-x-auto pb-6">
           {[1,2,3,4,5].map(i => (
             <div
               key={i}
-              className="netflix-card min-w-[220px] h-[130px] bg-neutral-800 rounded relative cursor-pointer overflow-hidden"
+              className="netflix-card min-w-[220px] h-[130px] bg-neutral-800 rounded relative"
             >
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition">
                 <PlayIcon />
