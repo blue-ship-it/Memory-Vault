@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DISHI+HRISHIT Memory Bank</title>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useRef } = React;
+
+        const PlayIcon = () => (
+            <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+        );
+
+        const InfoIcon = () => (
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
+
+        const PlusIcon = () => (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+        );
+
+        const SearchIcon = () => (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        );
+
+        const BellIcon = () => (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+        );
+
+        const EditIcon = () => (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+        );
+
+        const SaveIcon = () => (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+        );
+
+        const TrashIcon = () => (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+        );
+
+        const UploadIcon = () => (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+        );
+
+        const NetflixMemoryVault = () => {
+            const [isEditing, setIsEditing] = useState(false);
+            const [showAddModal, setShowAddModal] = useState(false);
+            const [selectedSeason, setSelectedSeason] = useState(null);
+
+            const [heroContent, setHeroContent] = useState({
+                title: "To my future Kids",
+                rating: "98% Match",
+                year: "2025",
+                duration: "1h 42m",
+                genre: "Personal",
+                badge: "#1 in Series Today",
+                description: "Little pieces of my life, saved in real time, for the children I hope to have one day. You press play and watch who I was before I became your mother.",
+                thumbnail: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1200&h=600&fit=crop"
+            });
+
+            const [brandName, setBrandName] = useState("DISHI+HRISHIT");
+
+            const [seasons, setSeasons] = useState([
+                {
+                    id: 1,
+                    name: "Season 1: The Beginning",
+                    episodes: [
+                        { id: 1, title: "First Steps", thumbnail: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=400&fit=crop", duration: "5:23" },
+                        { id: 2, title: "City Lights", thumbnail: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&h=400&fit=crop", duration: "3:45" },
+                        { id: 3, title: "Golden Hour", thumbnail: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&h=400&fit=crop", duration: "4:12" },
+                        { id: 4, title: "Ocean Dreams", thumbnail: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=300&h=400&fit=crop", duration: "6:30" },
+                        { id: 5, title: "Dancing Alone", thumbnail: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=400&fit=crop", duration: "2:54" },
+                        { id: 6, title: "Sunset Stories", thumbnail: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=400&fit=crop", duration: "7:18" },
+                        { id: 7, title: "Winter Memories", thumbnail: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&h=400&fit=crop", duration: "4:56" }
+                    ]
+                }
+            ]);
+
+            const [newEpisode, setNewEpisode] = useState({
+                title: "",
+                file: null,
+                thumbnail: null,
+                duration: "0:00"
+            });
+
+            const fileInputRef = useRef(null);
+            const thumbnailInputRef = useRef(null);
+            const heroThumbnailRef = useRef(null);
+
+            const handleAddEpisode = () => {
+                if (newEpisode.title && selectedSeason !== null) {
+                    const updatedSeasons = [...seasons];
+                    const episode = {
+                        id: Date.now(),
+                        title: newEpisode.title,
+                        thumbnail: newEpisode.thumbnail || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=400&fit=crop",
+                        duration: newEpisode.duration,
+                        videoFile: newEpisode.file
+                    };
+                    updatedSeasons[selectedSeason].episodes.push(episode);
+                    setSeasons(updatedSeasons);
+                    setNewEpisode({ title: "", file: null, thumbnail: null, duration: "0:00" });
+                    setShowAddModal(false);
+                }
+            };
+
+            const handleDeleteEpisode = (seasonIdx, episodeId) => {
+                const updatedSeasons = [...seasons];
+                updatedSeasons[seasonIdx].episodes = updatedSeasons[seasonIdx].episodes.filter(ep => ep.id !== episodeId);
+                setSeasons(updatedSeasons);
+            };
+
+            const handleAddSeason = () => {
+                const newSeason = {
+                    id: Date.now(),
+                    name: `Season ${seasons.length + 1}: New Chapter`,
+                    episodes: []
+                };
+                setSeasons([...seasons, newSeason]);
+            };
+
+            const handleDeleteSeason = (seasonIdx) => {
+                const updatedSeasons = seasons.filter((_, idx) => idx !== seasonIdx);
+                setSeasons(updatedSeasons);
+            };
+
+            const handleFileChange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    setNewEpisode({ ...newEpisode, file });
+                }
+            };
+
+            const handleThumbnailChange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        setNewEpisode({ ...newEpisode, thumbnail: event.target.result });
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            const handleHeroThumbnailChange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        setHeroContent({ ...heroContent, thumbnail: event.target.result });
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            const handleEpisodeTitleEdit = (seasonIdx, episodeId, newTitle) => {
+                const updatedSeasons = [...seasons];
+                const episode = updatedSeasons[seasonIdx].episodes.find(ep => ep.id === episodeId);
+                if (episode) {
+                    episode.title = newTitle;
+                    setSeasons(updatedSeasons);
+                }
+            };
+
+            const handleEpisodeDurationEdit = (seasonIdx, episodeId, newDuration) => {
+                const updatedSeasons = [...seasons];
+                const episode = updatedSeasons[seasonIdx].episodes.find(ep => ep.id === episodeId);
+                if (episode) {
+                    episode.duration = newDuration;
+                    setSeasons(updatedSeasons);
+                }
+            };
+
+            const handleSeasonNameEdit = (seasonIdx, newName) => {
+                const updatedSeasons = [...seasons];
+                updatedSeasons[seasonIdx].name = newName;
+                setSeasons(updatedSeasons);
+            };
+
+            const openAddModal = (seasonIdx) => {
+                setSelectedSeason(seasonIdx);
+                setShowAddModal(true);
+            };
+
+            const EditableText = ({ value, onChange, className, placeholder, multiline = false }) => {
+                if (!isEditing) {
+                    return <span className={className}>{value}</span>;
+                }
+
+                if (multiline) {
+                    return (
+                        <textarea
+                            value={value}
+                            onChange={(e) => onChange(e.target.value)}
+                            className={`${className} bg-gray-800/50 border border-red-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-red-600`}
+                            placeholder={placeholder}
+                            rows={3}
+                        />
+                    );
+                }
+
+                return (
+                    <input
+                        type="text"
+                        value={value}
+                        onChange={(e) => onChange(e.target.value)}
+                        className={`${className} bg-gray-800/50 border border-red-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-red-600`}
+                        placeholder={placeholder}
+                    />
+                );
+            };
+
+            return (
+                <div className="min-h-screen bg-black text-white font-sans">
+                    <header className="fixed top-0 w-full z-50 bg-gradient-to-b from-black to-transparent">
+                        <div className="flex items-center justify-between px-8 py-4">
+                            <div className="flex items-center space-x-8">
+                                <EditableText
+                                    value={brandName}
+                                    onChange={setBrandName}
+                                    className="text-red-600 text-3xl font-bold tracking-wider"
+                                    placeholder="Your Brand Name"
+                                />
+                                <nav className="hidden md:flex space-x-6 text-sm">
+                                    <a href="#" className="hover:text-gray-300">Home</a>
+                                    <a href="#" className="hover:text-gray-300">Series</a>
+                                    <a href="#" className="hover:text-gray-300">Movies</a>
+                                    <a href="#" className="hover:text-gray-300">Games</a>
+                                    <a href="#" className="hover:text-gray-300">Popular</a>
+                                    <a href="#" className="hover:text-gray-300">My List</a>
+                                </nav>
+                            </div>
+                            <div className="flex items-center space-x-6">
+                                <SearchIcon />
+                                <BellIcon />
+                                <button 
+                                    onClick={() => setIsEditing(!isEditing)}
+                                    className="bg-red-600 px-4 py-1 rounded text-sm hover:bg-red-700 flex items-center space-x-2"
+                                >
+                                    {isEditing ? <SaveIcon /> : <EditIcon />}
+                                    <span>{isEditing ? 'Done' : 'Edit'}</span>
+                                </button>
+                                <div className="w-8 h-8 bg-red-600 rounded cursor-pointer"></div>
+                            </div>
+                        </div>
+                    </header>
+
+                    <div className="relative h-screen">
+                        <div className="absolute inset-0">
+                            <img 
+                                src={heroContent.thumbnail} 
+                                alt={heroContent.title}
+                                className="w-full h-full object-cover"
+                            />
+                            {isEditing && (
+                                <button
+                                    onClick={() => heroThumbnailRef.current?.click()}
+                                    className="absolute top-4 right-4 bg-red-600 px-4 py-2 rounded flex items-center space-x-2 hover:bg-red-700 z-10"
+                                >
+                                    <UploadIcon />
+                                    <span>Change Background</span>
+                                </button>
+                            )}
+                            <input
+                                ref={heroThumbnailRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleHeroThumbnailChange}
+                                className="hidden"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                        </div>
+                        
+                        <div className="relative z-10 flex items-center h-full px-16">
+                            <div className="max-w-2xl">
+                                <div className="mb-4">
+                                    <EditableText
+                                        value={heroContent.badge}
+                                        onChange={(val) => setHeroContent({ ...heroContent, badge: val })}
+                                        className="bg-red-600 text-white px-3 py-1 inline-block text-xs font-bold"
+                                        placeholder="Badge text"
+                                    />
+                                </div>
+                                <h1 className="text-6xl font-bold mb-4">
+                                    <EditableText
+                                        value={heroContent.title}
+                                        onChange={(val) => setHeroContent({ ...heroContent, title: val })}
+                                        className="text-6xl font-bold"
+                                        placeholder="Title"
+                                    />
+                                </h1>
+                                <div className="flex items-center space-x-4 text-sm mb-4">
+                                    <EditableText
+                                        value={heroContent.rating}
+                                        onChange={(val) => setHeroContent({ ...heroContent, rating: val })}
+                                        className="text-green-500 font-bold"
+                                        placeholder="Rating"
+                                    />
+                                    <EditableText
+                                        value={heroContent.year}
+                                        onChange={(val) => setHeroContent({ ...heroContent, year: val })}
+                                        className=""
+                                        placeholder="Year"
+                                    />
+                                    <EditableText
+                                        value={heroContent.duration}
+                                        onChange={(val) => setHeroContent({ ...heroContent, duration: val })}
+                                        className=""
+                                        placeholder="Duration"
+                                    />
+                                    <EditableText
+                                        value={heroContent.genre}
+                                        onChange={(val) => setHeroContent({ ...heroContent, genre: val })}
+                                        className="border border-gray-400 px-2"
+                                        placeholder="Genre"
+                                    />
+                                </div>
+                                <div className="text-lg mb-6 leading-relaxed max-w-xl">
+                                    <EditableText
+                                        value={heroContent.description}
+                                        onChange={(val) => setHeroContent({ ...heroContent, description: val })}
+                                        className="text-lg leading-relaxed w-full"
+                                        placeholder="Description"
+                                        multiline={true}
+                                    />
+                                </div>
+                                <div className="flex space-x-4">
+                                    <button className="bg-white text-black px-8 py-3 rounded flex items-center space-x-2 font-bold hover:bg-gray-200 transition">
+                                        <PlayIcon />
+                                        <span>Play</span>
+                                    </button>
+                                    <button className="bg-gray-600/80 px-8 py-3 rounded flex items-center space-x-2 font-bold hover:bg-gray-600 transition">
+                                        <InfoIcon />
+                                        <span>More Info</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="relative z-20 -mt-32 px-16 pb-20">
+                        {seasons.map((season, seasonIdx) => (
+                            <div key={season.id} className="mb-12">
+                                <div className="flex items-center justify-between mb-4">
+                                    <EditableText
+                                        value={season.name}
+                                        onChange={(val) => handleSeasonNameEdit(seasonIdx, val)}
+                                        className="text-2xl font-bold"
+                                        placeholder="Season name"
+                                    />
+                                    <div className="flex space-x-2">
+                                        {isEditing && (
+                                            <>
+                                                <button 
+                                                    onClick={() => openAddModal(seasonIdx)}
+                                                    className="bg-red-600 px-4 py-2 rounded flex items-center space-x-2 hover:bg-red-700"
+                                                >
+                                                    <PlusIcon />
+                                                    <span>Add Episode</span>
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleDeleteSeason(seasonIdx)}
+                                                    className="bg-gray-700 px-4 py-2 rounded flex items-center space-x-2 hover:bg-gray-600"
+                                                >
+                                                    <TrashIcon />
+                                                    <span>Delete Season</span>
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
+                                    {season.episodes.map((episode) => (
+                                        <div key={episode.id} className="group relative cursor-pointer">
+                                            <div className="relative overflow-hidden rounded">
+                                                <img 
+                                                    src={episode.thumbnail} 
+                                                    alt={episode.title}
+                                                    className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
+                                                />
+                                                {isEditing && (
+                                                    <button
+                                                        onClick={() => handleDeleteEpisode(seasonIdx, episode.id)}
+                                                        className="absolute top-2 right-2 bg-red-600 p-2 rounded-full hover:bg-red-700 z-10"
+                                                    >
+                                                        <TrashIcon />
+                                                    </button>
+                                                )}
+                                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <PlayIcon />
+                                                </div>
+                                            </div>
+                                            <div className="mt-2">
+                                                {isEditing ? (
+                                                    <>
+                                                        <input
+                                                            type="text"
+                                                            value={episode.title}
+                                                            onChange={(e) => handleEpisodeTitleEdit(seasonIdx, episode.id, e.target.value)}
+                                                            className="text-sm font-semibold w-full bg-gray-800/50 border border-red-600 rounded px-2 py-1 mb-1"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            value={episode.duration}
+                                                            onChange={(e) => handleEpisodeDurationEdit(seasonIdx, episode.id, e.target.value)}
+                                                            className="text-xs text-gray-400 w-full bg-gray-800/50 border border-red-600 rounded px-2 py-1"
+                                                        />
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <h3 className="text-sm font-semibold truncate">{episode.title}</h3>
+                                                        <p className="text-xs text-gray-400">{episode.duration}</p>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+
+                        {isEditing && (
+                            <button
+                                onClick={handleAddSeason}
+                                className="bg-red-600 px-6 py-3 rounded flex items-center space-x-2 hover:bg-red-700 mx-auto"
+                            >
+                                <PlusIcon />
+                                <span>Add New Season</span>
+                            </button>
+                        )}
+                    </div>
+
+                    {showAddModal && (
+                        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+                            <div className="bg-gray-900 rounded-lg p-8 max-w-md w-full">
+                                <h2 className="text-2xl font-bold mb-6">Add New Episode</h2>
+                                
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm mb-2">Episode Title</label>
+                                        <input
+                                            type="text"
+                                            value={newEpisode.title}
+                                            onChange={(e) => setNewEpisode({ ...newEpisode, title: e.target.value })}
+                                            className="w-full bg-gray-800 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-600"
+                                            placeholder="Enter episode title"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm mb-2">Duration</label>
+                                        <input
+                                            type="text"
+                                            value={newEpisode.duration}
+                                            onChange={(e) => setNewEpisode({ ...newEpisode, duration: e.target.value })}
+                                            className="w-full bg-gray-800 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-600"
+                                            placeholder="e.g., 5:23"
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <label className="block text-sm mb-2">Video File (Optional)</label>
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept="video/*"
+                                            onChange={handleFileChange}
+                                            className="hidden"
+                                        />
+                                        <button
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="w-full bg-gray-800 rounded px-4 py-2 hover:bg-gray-700 flex items-center justify-center space-x-2"
+                                        >
+                                            <UploadIcon />
+                                            <span>{newEpisode.file ? newEpisode.file.name : 'Upload Video'}</span>
+                                        </button>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm mb-2">Thumbnail (Optional)</label>
+                                        <input
+                                            ref={thumbnailInputRef}
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleThumbnailChange}
+                                            className="hidden"
+                                        />
+                                        <button
+                                            onClick={() => thumbnailInputRef.current?.click()}
+                                            className="w-full bg-gray-800 rounded px-4 py-2 hover:bg-gray-700 flex items-center justify-center space-x-2"
+                                        >
+                                            <UploadIcon />
+                                            <span>{newEpisode.thumbnail ? 'Thumbnail Selected' : 'Upload Thumbnail'}</span>
+                                        </button>
+                                    </div>
+
+                                    {newEpisode.thumbnail && (
+                                        <img src={newEpisode.thumbnail} alt="Preview" className="w-full h-32 object-cover rounded" />
+                                    )}
+                                </div>
+
+                                <div className="flex space-x-4 mt-6">
+                                    <button
+                                        onClick={handleAddEpisode}
+                                        className="flex-1 bg-red-600 py-2 rounded font-bold hover:bg-red-700"
+                                    >
+                                        Add Episode
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setShowAddModal(false);
+                                            setNewEpisode({ title: "", file: null, thumbnail: null, duration: "0:00" });
+                                        }}
+                                        className="flex-1 bg-gray-700 py-2 rounded font-bold hover:bg-gray-600"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        ReactDOM.render(<NetflixMemoryVault />, document.getElementById('root'));
+    </script>
+</body>
+</html>
