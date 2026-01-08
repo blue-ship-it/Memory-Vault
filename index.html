@@ -147,10 +147,10 @@ function Vault() {
   }, []);
 
   const videos = [
-    { title: "Memory One", src: "videos/memory1.mp4" },
-    { title: "Memory Two", src: "videos/memory2.mp4" },
-    { title: "Memory Three", src: "videos/memory3.mp4" }
-  ];
+  { title: "Memory One", preview: "videos/memory1.mp4", full: "videos/memory1.mp4" },
+  { title: "Memory Two", preview: "videos/memory2.mp4", full: "videos/memory2.mp4" },
+  { title: "Memory Three", preview: "videos/memory3.mp4", full: "videos/memory3.mp4" }
+];
 
   return (
     <div className="text-white fade-in">
@@ -207,10 +207,32 @@ bubblegum
         <div className="flex gap-4 overflow-x-auto pb-10">
           {videos.map((vid, i) => (
             <div
-              key={i}
-              onClick={() => setActiveVideo(vid.src)}
-              className="netflix-card min-w-[220px] h-[130px] bg-neutral-800 rounded relative cursor-pointer"
-            >
+  key={i}
+  className="netflix-card min-w-[220px] h-[130px] rounded relative cursor-pointer overflow-hidden"
+  onMouseEnter={e => e.currentTarget.querySelector("video")?.play()}
+  onMouseLeave={e => {
+    const v = e.currentTarget.querySelector("video");
+    if (v) { v.pause(); v.currentTime = 0; }
+  }}
+  onClick={() => setActiveVideo(vid.full)}
+>
+  <video
+    src={vid.preview}
+    muted
+    loop
+    playsInline
+    preload="metadata"
+    className="absolute inset-0 w-full h-full object-cover"
+  />
+
+  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition">
+    <PlayIcon />
+  </div>
+
+  <div className="absolute bottom-2 left-2 text-sm font-semibold tracking-wide">
+    {vid.title}
+  </div>
+</div>
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition">
                 <PlayIcon />
               </div>
@@ -248,3 +270,4 @@ ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 </script>
 </body>
 </html>
+
