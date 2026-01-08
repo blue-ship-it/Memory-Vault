@@ -116,7 +116,7 @@ function App() {
           setStage("vault");
         }} className="cursor-pointer text-center">
           <div className="w-32 h-32 bg-red-600 rounded mb-4"></div>
-          <p>Memories</p>
+          <p className="font-semibold">Rex</p>
         </div>
       </div>
     );
@@ -197,30 +197,57 @@ function Vault(){
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70"></div>
 
         <div className="relative px-10 pb-32 max-w-3xl">
-          <h2 className="text-6xl font-extrabold mb-6">
-            To our memories
-          </h2>
-          <div className="flex items-center gap-3 text-sm text-gray-300 mb-4">
-            <span className="font-bold text-green-400">IMDb 9.6</span>
-            <span>•</span>
-            <span>TV-MA</span>
-            <span>•</span>
-            <span>2025</span>
-            <span>•</span>
-            <span>1 Season</span>
-          </div>
+  <p className="uppercase tracking-widest text-sm text-gray-300 mb-2">
+    TV Series
+  </p>
 
-          <p className="text-xl whitespace-pre-line">
+  <h2 className="text-6xl font-extrabold mb-4 leading-tight">
+    To Our Memories
+  </h2>
+
+  <div className="flex items-center gap-3 text-sm text-gray-300 mb-4">
+    <span className="font-bold text-green-400">IMDb 9.6</span>
+    <span>•</span>
+    <span>TV-MA</span>
+    <span>•</span>
+    <span>2025</span>
+    <span>•</span>
+    <span>1 Season</span>
+  </div>
+
+  <p className="text-sm font-semibold text-gray-200 mb-6">
+    #1 in TV Shows Today
+  </p>
+
+  <p className="text-lg text-gray-200 whitespace-pre-line mb-8 leading-relaxed">
 Little pieces of our life, saved exactly as we lived them even when we were afar.
 You can go halfway across the world, I will still find ways to get you closer.
 
 love,
 bubblegum
-          </p>
+  </p>
 
-          {secret && <p className="italic text-gray-400 mt-4">
-            You were always meant to find this.
-          </p>}
+  {secret && (
+    <p className="italic text-gray-400 mb-6">
+      You were always meant to find this.
+    </p>
+  )}
+
+  <div className="flex gap-4">
+    <button
+      onClick={() => setActiveVideo(HERO_VIDEO)}
+      className="flex items-center gap-3 bg-white text-black px-8 py-3 rounded font-bold hover:bg-gray-200 transition"
+    >
+      <PlayIcon /> Play
+    </button>
+
+    <button
+      className="flex items-center gap-3 bg-gray-600/70 text-white px-8 py-3 rounded font-bold hover:bg-gray-600 transition"
+    >
+      ⓘ More Info
+    </button>
+  </div>
+</div>
 
           <button onClick={()=>setActiveVideo(HERO_VIDEO)}
             className="mt-6 bg-white text-black px-8 py-3 rounded flex gap-4 font-bold">
@@ -311,4 +338,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
 </html>
+
 
