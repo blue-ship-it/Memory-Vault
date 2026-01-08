@@ -5,43 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Memory Vault</title>
 
-<!-- Netflix-like font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
 
-<!-- React -->
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-
-<!-- Babel -->
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-<!-- Tailwind -->
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
 body {
   margin:0;
   background:black;
-  font-family: 'Inter', system-ui, -apple-system;
+  font-family:'Inter',system-ui;
 }
 
 .netflix-card {
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  transition: transform .35s ease, box-shadow .35s ease;
 }
 .netflix-card:hover {
   transform: scale(1.18);
-  z-index: 30;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.85);
+  z-index:30;
+  box-shadow:0 30px 60px rgba(0,0,0,.85);
 }
 
 .fade-in {
-  animation: fadeIn 1.2s ease forwards;
+  animation:fadeIn 1.2s ease forwards;
 }
 @keyframes fadeIn {
-  from { opacity:0; transform: translateY(20px); }
-  to { opacity:1; transform: translateY(0); }
+  from {opacity:0; transform:translateY(20px);}
+  to {opacity:1; transform:none;}
 }
 </style>
 </head>
@@ -50,150 +44,130 @@ body {
 <div id="root"></div>
 
 <script type="text/babel">
-const { useState, useEffect } = React;
+const { useState, useEffect, useRef } = React;
 
-/* ---------- CONFIG ---------- */
 const PASSWORD = "lovie";
 
-/* ---------- NETFLIX INTRO SOUND ---------- */
+/* Intro sound */
 const playIntroSound = () => {
   if (!localStorage.getItem("intro_played")) {
-    const audio = new Audio("netflix-intro.mp3");
-    audio.volume = 0.6;
-    audio.play().catch(() => {});
-    localStorage.setItem("intro_played", "yes");
+    const a = new Audio("netflix-intro.mp3");
+    a.volume = 0.6;
+    a.play().catch(()=>{});
+    localStorage.setItem("intro_played","yes");
   }
 };
 
-/* ---------- ICONS ---------- */
 const PlayIcon = () => (
-  <svg className="w-12 h-12 fill-white" viewBox="0 0 24 24">
-    <path d="M8 5v14l11-7z"/>
-  </svg>
+<svg className="w-12 h-12 fill-white" viewBox="0 0 24 24">
+<path d="M8 5v14l11-7z"/></svg>
 );
-
 const CloseIcon = () => (
-  <svg className="w-8 h-8 fill-white" viewBox="0 0 24 24">
-    <path d="M6 6l12 12M6 18L18 6"/>
-  </svg>
+<svg className="w-8 h-8 fill-white" viewBox="0 0 24 24">
+<path d="M6 6l12 12M6 18L18 6"/></svg>
+);
+const VolumeIcon = ({ muted }) => muted ? (
+<svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
+<path d="M16 8l-8 8M8 8l8 8"/></svg>
+) : (
+<svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
+<path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
 );
 
-const VolumeIcon = ({ muted }) => (
-  muted ? (
-    <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
-      <path d="M16 8l-8 8M8 8l8 8"/>
-    </svg>
-  ) : (
-    <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
-      <path d="M3 9v6h4l5 5V4L7 9H3z"/>
-    </svg>
-  )
-);
-
-/* ---------- APP ---------- */
+/* APP */
 function App() {
-  const [stage, setStage] = useState(
-    localStorage.getItem("vault_stage") || "lock"
-  );
-  const [input, setInput] = useState("");
+  const [stage,setStage] = useState(localStorage.getItem("vault_stage")||"lock");
+  const [input,setInput] = useState("");
 
-  if (stage === "lock") {
+  if(stage==="lock"){
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <div className="bg-neutral-900 p-8 rounded w-80 fade-in">
-          <h1 className="text-2xl mb-4 font-extrabold">Memory Vault</h1>
-          <input
-            type="password"
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            placeholder="Enter password"
-            className="w-full p-2 text-black mb-4"
-          />
-          <button
-            onClick={() => {
-              if (input === PASSWORD) {
-                localStorage.setItem("vault_stage", "profiles");
-                setStage("profiles");
-              } else alert("Wrong password");
-            }}
-            className="w-full bg-red-600 py-2 rounded font-semibold"
-          >
-            Enter
-          </button>
+      <div className="min-h-screen flex items-center justify-center text-white">
+        <div className="bg-neutral-900 p-8 rounded fade-in w-80">
+          <h1 className="text-2xl font-extrabold mb-4">Memory Vault</h1>
+          <input type="password" value={input} onChange={e=>setInput(e.target.value)}
+            className="w-full p-2 text-black mb-4"/>
+          <button onClick={()=>{
+            if(input===PASSWORD){
+              localStorage.setItem("vault_stage","profiles");
+              setStage("profiles");
+            } else alert("Wrong password");
+          }} className="w-full bg-red-600 py-2 rounded">Enter</button>
         </div>
       </div>
     );
   }
 
-  if (stage === "profiles") {
+  if(stage==="profiles"){
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-white fade-in">
         <h2 className="text-3xl mb-8 font-bold">Who’s watching?</h2>
-        <div
-          onClick={() => {
-            localStorage.setItem("vault_stage", "vault");
-            setStage("vault");
-          }}
-          className="cursor-pointer text-center"
-        >
+        <div onClick={()=>{
+          localStorage.setItem("vault_stage","vault");
+          setStage("vault");
+        }} className="cursor-pointer text-center">
           <div className="w-32 h-32 bg-red-600 rounded mb-4"></div>
-          <p className="font-semibold">Memories</p>
+          <p>Memories</p>
         </div>
       </div>
     );
   }
 
-  return <Vault />;
+  return <Vault/>;
 }
 
-/* ---------- VAULT ---------- */
-function Vault() {
-  const [activeVideo, setActiveVideo] = useState(null);
-  const [muted, setMuted] = useState(true);
-  const [showSecret, setShowSecret] = useState(false);
+/* VAULT */
+function Vault(){
+  const [activeVideo,setActiveVideo] = useState(null);
+  const [muted,setMuted] = useState(true);
+  const [secret,setSecret] = useState(false);
+  const heroAudio = useRef(null);
 
   const HERO_VIDEO = "videos/hero.mp4";
 
-  useEffect(() => {
+  useEffect(()=>{
     playIntroSound();
-    setTimeout(() => setShowSecret(true), 6000);
-  }, []);
 
-  const videos = [
-  { title: "Memory One", preview: "videos/memory1.mp4", full: "videos/memory1.mp4" },
-  { title: "Memory Two", preview: "videos/memory2.mp4", full: "videos/memory2.mp4" },
-  { title: "Memory Three", preview: "videos/memory3.mp4", full: "videos/memory3.mp4" }
-];
+    // keyboard easter egg: MEMORY
+    let seq="";
+    const handler = e=>{
+      seq += e.key.toUpperCase();
+      if(!"MEMORY".startsWith(seq)) seq="";
+      if(seq==="MEMORY"){
+        setSecret(true);
+        localStorage.setItem("secret_found","yes");
+      }
+    };
+    window.addEventListener("keydown",handler);
+    return ()=>window.removeEventListener("keydown",handler);
+  },[]);
+
+  useEffect(()=>{
+    // fade hero audio
+    if(heroAudio.current){
+      heroAudio.current.volume = activeVideo ? 0 : 0.6;
+    }
+  },[activeVideo]);
+
+  const videos=[
+    {title:"Memory One", preview:"videos/memory1.mp4", full:"videos/memory1.mp4"},
+    {title:"Memory Two", preview:"videos/memory2.mp4", full:"videos/memory2.mp4"},
+    {title:"Memory Three", preview:"videos/memory3.mp4", full:"videos/memory3.mp4"},
+  ];
 
   return (
     <div className="text-white fade-in">
-
-      {/* NAV */}
-      <header className="fixed top-0 w-full z-50 px-10 py-4 bg-gradient-to-b from-black/80 to-transparent flex justify-between">
-        <h1 className="text-red-600 text-2xl font-extrabold tracking-wide">
-          DISHI + HRISHIT
-        </h1>
-        <button onClick={() => setMuted(!muted)}>
-          <VolumeIcon muted={muted}/>
-        </button>
+      <header className="fixed top-0 w-full z-50 px-10 py-4 flex justify-between bg-gradient-to-b from-black/80">
+        <h1 className="text-red-600 font-extrabold text-2xl">DISHI + HRISHIT</h1>
+        <button onClick={()=>setMuted(!muted)}><VolumeIcon muted={muted}/></button>
       </header>
 
-      {/* HERO */}
-      <section
-        className="relative h-screen flex items-end"
-        style={{
-          backgroundImage: "url('hero.jpeg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center"
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
+      <section className={`relative h-screen flex items-end ${activeVideo?"blur-sm":""}`}
+        style={{backgroundImage:"url('hero.jpeg')",backgroundSize:"cover",backgroundPosition:"center"}}>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70"></div>
 
         <div className="relative px-10 pb-32 max-w-3xl">
-          <h2 className="text-5xl md:text-6xl font-extrabold mb-6">
-            To our memories
-          </h2>
-          <p className="text-lg md:text-xl text-gray-200 whitespace-pre-line mb-8 leading-relaxed">
+          <h2 className="text-6xl font-extrabold mb-6">To our memories</h2>
+          <p className="text-xl whitespace-pre-line">
 Little pieces of our life, saved exactly as we lived them even when we were afar.
 You can go halfway across the world, I will still find ways to get you closer.
 
@@ -201,95 +175,54 @@ love,
 bubblegum
           </p>
 
-          {showSecret && (
-            <p className="text-sm text-gray-400 italic mt-4">
-              Some distances only exist on maps.
-            </p>
-          )}
+          {secret && <p className="italic text-gray-400 mt-4">
+            You were always meant to find this.
+          </p>}
 
-          <button
-  onClick={() => setActiveVideo(HERO_VIDEO)}
-  className="flex items-center gap-4 bg-white text-black px-8 py-3 rounded font-bold mt-6 hover:bg-gray-200 transition"
->
-  <PlayIcon /> Play
-</button>
-
+          <button onClick={()=>setActiveVideo(HERO_VIDEO)}
+            className="mt-6 bg-white text-black px-8 py-3 rounded flex gap-4 font-bold">
+            <PlayIcon/> Play
+          </button>
         </div>
       </section>
 
-      {/* ROW */}
       <section className="px-10 -mt-24 relative z-10">
-        <h3 className="text-xl font-bold mb-4 tracking-wide">Season 1</h3>
-
+        <h3 className="text-xl font-bold mb-4">Season 1</h3>
         <div className="flex gap-4 overflow-x-auto pb-10">
-          {videos.map((vid, i) => (
-            {videos.map((vid, i) => (
-  <div
-    key={i}
-    className="netflix-card min-w-[220px] h-[130px] rounded relative cursor-pointer overflow-hidden"
-    onMouseEnter={e => e.currentTarget.querySelector("video")?.play()}
-    onMouseLeave={e => {
-      const v = e.currentTarget.querySelector("video");
-      if (v) { v.pause(); v.currentTime = 0; }
-    }}
-    onClick={() => setActiveVideo(vid.full)}
-  >
-    <video
-      src={vid.preview}
-      muted
-      loop
-      playsInline
-      preload="metadata"
-      className="absolute inset-0 w-full h-full object-cover"
-    />
-
-    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition">
-      <PlayIcon />
-    </div>
-
-    <div className="absolute bottom-2 left-2 text-sm font-semibold tracking-wide">
-      {vid.title}
-    </div>
-  </div>
-))}
-
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition">
-                <PlayIcon />
+          {videos.map((vid,i)=>(
+            <div key={i}
+              className="netflix-card min-w-[220px] h-[130px] rounded relative overflow-hidden cursor-pointer"
+              onMouseEnter={e=>e.currentTarget.querySelector("video")?.play()}
+              onMouseLeave={e=>{
+                const v=e.currentTarget.querySelector("video");
+                if(v){v.pause();v.currentTime=0;}
+              }}
+              onClick={()=>setActiveVideo(vid.full)}>
+              <video src={vid.preview} muted loop playsInline
+                className="absolute inset-0 w-full h-full object-cover"/>
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100">
+                <PlayIcon/>
               </div>
-              <div className="absolute bottom-2 left-2 text-sm font-semibold tracking-wide">
-                {vid.title}
-              </div>
+              <div className="absolute bottom-2 left-2 text-sm">{vid.title}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* VIDEO MODAL */}
       {activeVideo && (
         <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center">
-          <button
-            className="absolute top-6 right-6"
-            onClick={() => setActiveVideo(null)}
-          >
-            <CloseIcon />
+          <button className="absolute top-6 right-6" onClick={()=>setActiveVideo(null)}>
+            <CloseIcon/>
           </button>
-          <video
-            src={activeVideo}
-            controls
-            autoPlay
-            muted={muted}
-            className="w-full max-w-5xl max-h-[80vh] rounded"
-          />
+          <video src={activeVideo} controls autoPlay muted={muted}
+            className="max-w-5xl max-h-[80vh] rounded"/>
         </div>
       )}
     </div>
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
 </html>
-
-
-
