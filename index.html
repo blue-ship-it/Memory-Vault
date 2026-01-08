@@ -1,255 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Memory Vault</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Memory Vault</title>
 
-  <!-- React -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<!-- React -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
-  <!-- Babel -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- Babel -->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
 
-  <style>
-    body { margin:0; background:black; }
-  </style>
+<style>
+body { background:black; margin:0; }
+.netflix-card:hover { transform: scale(1.12); z-index:10; }
+.netflix-card { transition: transform .3s ease; }
+</style>
 </head>
 
 <body>
 <div id="root"></div>
 
 <script type="text/babel">
-const { useState, useEffect, useRef } = React;
+const { useState, useEffect } = React;
 
-/* ---------- LOCAL STORAGE HELPERS ---------- */
-const load = (key, fallback) => {
-  try {
-    return JSON.parse(localStorage.getItem(key)) ?? fallback;
-  } catch {
-    return fallback;
-  }
-};
-
-const save = (key, value) => {
-  localStorage.setItem(key, JSON.stringify(value));
-};
-
-/* ---------- ICONS ---------- */
+/* ---------------- ICONS ---------------- */
 const PlayIcon = () => (
-  <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
-    <path d="M8 5v14l11-7z"/>
-  </svg>
+<svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
+<path d="M8 5v14l11-7z"/>
+</svg>
 );
 
-const TrashIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeWidth="2" d="M19 7L5 7M10 11v6M14 11v6M9 7V4h6v3"/>
-  </svg>
+const LockIcon = () => (
+<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path strokeWidth="2" d="M12 11V7a4 4 0 10-8 0v4m8 0h4a2 2 0 012 2v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7a2 2 0 012-2h6z"/>
+</svg>
 );
 
-/* ---------- APP ---------- */
-function MemoryVault() {
-  const [editing, setEditing] = useState(false);
+/* ---------------- PASSWORD ---------------- */
+const PASSWORD = "memory123";
 
-  const [brand, setBrand] = useState(() =>
-    load("brand", "DISHI + HRISHIT")
-  );
+/* ---------------- APP ---------------- */
+function App() {
+const [unlocked, setUnlocked] = useState(
+localStorage.getItem("unlocked") === "yes"
+);
 
-  const [hero, setHero] = useState(() =>
-    load("hero", {
-      title: "To our future kids",
-      desc: "Little pieces of our life, saved in real time.",
-      img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1200"
-    })
-  );
+const [attempt, setAttempt] = useState("");
 
-  const [seasons, setSeasons] = useState(() =>
-    load("seasons", [
-      {
-        id: 1,
-        name: "Season 1: The Beginning",
-        episodes: [
-          { id: 1, title: "City Lights", duration: "3:45" },
-          { id: 2, title: "Golden Hour", duration: "4:12" }
-        ]
-      }
-    ])
-  );
+const unlock = () => {
+if (attempt === PASSWORD) {
+localStorage.setItem("unlocked", "yes");
+setUnlocked(true);
+} else alert("Wrong password");
+};
 
-  /* ---------- AUTOSAVE ---------- */
-  useEffect(() => save("brand", brand), [brand]);
-  useEffect(() => save("hero", hero), [hero]);
-  useEffect(() => save("seasons", seasons), [seasons]);
-
-  /* ---------- ACTIONS ---------- */
-  const addSeason = () => {
-    setSeasons([
-      ...seasons,
-      { id: Date.now(), name: "New Season", episodes: [] }
-    ]);
-  };
-
-  const addEpisode = (i) => {
-    const copy = [...seasons];
-    copy[i].episodes.push({
-      id: Date.now(),
-      title: "New Memory",
-      duration: "0:00"
-    });
-    setSeasons(copy);
-  };
-
-  const deleteEpisode = (si, ei) => {
-    const copy = [...seasons];
-    copy[si].episodes = copy[si].episodes.filter(e => e.id !== ei);
-    setSeasons(copy);
-  };
-
-  return (
-    <div className="text-white min-h-screen">
-
-      {/* HEADER */}
-      <header className="fixed top-0 w-full bg-black/80 z-50 flex justify-between items-center px-6 py-3">
-        {editing ? (
-          <input
-            value={brand}
-            onChange={e => setBrand(e.target.value)}
-            className="bg-transparent border-b border-red-600 text-red-600 text-2xl font-bold"
-          />
-        ) : (
-          <h1 className="text-red-600 text-2xl font-bold">{brand}</h1>
-        )}
-
-        <button
-          onClick={() => setEditing(!editing)}
-          className="bg-red-600 px-4 py-1 rounded"
-        >
-          {editing ? "Done" : "Edit"}
-        </button>
-      </header>
-
-      {/* HERO */}
-      <section className="relative h-screen">
-        <img src={hero.img} className="w-full h-full object-cover"/>
-        <div className="absolute inset-0 bg-black/60"/>
-
-        <div className="absolute bottom-24 left-16 max-w-xl">
-          {editing ? (
-            <>
-              <input
-                value={hero.title}
-                onChange={e => setHero({...hero, title:e.target.value})}
-                className="text-5xl font-bold bg-transparent border-b mb-4"
-              />
-              <textarea
-                value={hero.desc}
-                onChange={e => setHero({...hero, desc:e.target.value})}
-                className="bg-black/50 w-full p-2"
-              />
-            </>
-          ) : (
-            <>
-              <h2 className="text-5xl font-bold mb-4">{hero.title}</h2>
-              <p className="text-lg mb-6">{hero.desc}</p>
-            </>
-          )}
-
-          <button className="bg-white text-black px-6 py-3 rounded font-bold flex gap-2">
-            <PlayIcon/> Play
-          </button>
-        </div>
-      </section>
-
-      {/* SEASONS */}
-      <section className="px-16 py-20">
-        {seasons.map((s, si) => (
-          <div key={s.id} className="mb-12">
-            {editing ? (
-              <input
-                value={s.name}
-                onChange={e => {
-                  const copy = [...seasons];
-                  copy[si].name = e.target.value;
-                  setSeasons(copy);
-                }}
-                className="text-2xl font-bold bg-transparent border-b mb-4"
-              />
-            ) : (
-              <h3 className="text-2xl font-bold mb-4">{s.name}</h3>
-            )}
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {s.episodes.map(ep => (
-                <div key={ep.id} className="bg-gray-800 p-3 rounded relative">
-                  {editing ? (
-                    <>
-                      <input
-                        value={ep.title}
-                        onChange={e => {
-                          const copy = [...seasons];
-                          copy[si].episodes.find(x=>x.id===ep.id).title = e.target.value;
-                          setSeasons(copy);
-                        }}
-                        className="bg-transparent border-b w-full"
-                      />
-                      <input
-                        value={ep.duration}
-                        onChange={e => {
-                          const copy = [...seasons];
-                          copy[si].episodes.find(x=>x.id===ep.id).duration = e.target.value;
-                          setSeasons(copy);
-                        }}
-                        className="bg-transparent border-b w-full text-sm mt-1"
-                      />
-                      <button
-                        onClick={() => deleteEpisode(si, ep.id)}
-                        className="absolute top-2 right-2 text-red-500"
-                      >
-                        <TrashIcon/>
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <h4 className="font-semibold">{ep.title}</h4>
-                      <p className="text-sm text-gray-400">{ep.duration}</p>
-                    </>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {editing && (
-              <button
-                onClick={() => addEpisode(si)}
-                className="mt-4 bg-red-600 px-4 py-2 rounded"
-              >
-                Add Episode
-              </button>
-            )}
-          </div>
-        ))}
-
-        {editing && (
-          <button
-            onClick={addSeason}
-            className="bg-red-600 px-6 py-3 rounded"
-          >
-            Add Season
-          </button>
-        )}
-      </section>
-
-    </div>
-  );
+if (!unlocked) {
+return (
+<div className="min-h-screen flex items-center justify-center text-white">
+<div className="bg-gray-900 p-8 rounded w-80">
+<h1 className="text-2xl mb-4 flex gap-2 items-center">
+<LockIcon/> Memory Vault
+</h1>
+<input
+type="password"
+placeholder="Enter password"
+value={attempt}
+onChange={e=>setAttempt(e.target.value)}
+className="w-full p-2 text-black mb-4"
+/>
+<button
+onClick={unlock}
+className="w-full bg-red-600 py-2 rounded"
+>
+Unlock
+</button>
+</div>
+</div>
+);
 }
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<MemoryVault/>);
+return <Vault/>;
+}
+
+/* ---------------- VAULT ---------------- */
+function Vault() {
+const [videos, setVideos] = useState([]);
+
+const addVideo = (file) => {
+const url = URL.createObjectURL(file);
+setVideos([...videos, { id: Date.now(), url, name: file.name }]);
+};
+
+return (
+<div className="text-white">
+
+<header className="fixed top-0 w-full bg-black/80 z-50 p-4 text-red-600 text-2xl font-bold">
+DISHI + HRISHIT
+</header>
+
+<div className="pt-20 px-4">
+
+<label className="block mb-4">
+<span className="bg-red-600 px-4 py-2 rounded cursor-pointer">
+Add Video
+</span>
+<input
+type="file"
+accept="video/*"
+hidden
+onChange={e => addVideo(e.target.files[0])}
+/>
+</label>
+
+<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+{videos.map(v => (
+<div key={v.id} className="relative netflix-card cursor-pointer">
+<video
+src={v.url}
+controls
+className="w-full h-40 object-cover rounded"
+/>
+<div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition">
+<PlayIcon/>
+</div>
+</div>
+))}
+</div>
+
+</div>
+</div>
+);
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
 </html>
