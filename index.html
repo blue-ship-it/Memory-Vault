@@ -37,6 +37,16 @@ body {
   from {opacity:0; transform:translateY(20px);}
   to {opacity:1; transform:none;}
 }
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  
+  .new-badge {
+    animation: pulse 1.6s infinite;
+  }
+
 </style>
 </head>
 
@@ -148,11 +158,32 @@ function Vault(){
     }
   },[activeVideo]);
 
-  const videos=[
-    {title:"Memory One", preview:"videos/memory1.mp4", full:"videos/memory1.mp4"},
-    {title:"Memory Two", preview:"videos/memory2.mp4", full:"videos/memory2.mp4"},
-    {title:"Memory Three", preview:"videos/memory3.mp4", full:"videos/memory3.mp4"},
-  ];
+  const videos = [
+  {
+    title: "The Day We Didn’t Sleep",
+    preview: "videos/memory1.mp4",
+    full: "videos/memory1.mp4",
+    isNew: true
+  },
+  {
+    title: "Airport Goodbyes",
+    preview: "videos/memory2.mp4",
+    full: "videos/memory2.mp4",
+    isNew: false
+  },
+  {
+    title: "That One Voice Note",
+    preview: "videos/memory3.mp4",
+    full: "videos/memory3.mp4",
+    isNew: true
+  },
+  {
+    title: "Time Zones & Takeout",
+    preview: "videos/memory1.mp4",
+    full: "videos/memory1.mp4",
+    isNew: false
+  }
+];
 
   return (
     <div className="text-white fade-in">
@@ -166,7 +197,19 @@ function Vault(){
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70"></div>
 
         <div className="relative px-10 pb-32 max-w-3xl">
-          <h2 className="text-6xl font-extrabold mb-6">To our memories</h2>
+          <h2 className="text-6xl font-extrabold mb-6">
+            To our memories
+          </h2>
+          <div className="flex items-center gap-3 text-sm text-gray-300 mb-4">
+            <span className="font-bold text-green-400">IMDb 9.6</span>
+            <span>•</span>
+            <span>TV-MA</span>
+            <span>•</span>
+            <span>2025</span>
+            <span>•</span>
+            <span>1 Season</span>
+          </div>
+
           <p className="text-xl whitespace-pre-line">
 Little pieces of our life, saved exactly as we lived them even when we were afar.
 You can go halfway across the world, I will still find ways to get you closer.
@@ -187,10 +230,18 @@ bubblegum
       </section>
 
       <section className="px-10 -mt-24 relative z-10">
-        <h3 className="text-xl font-bold mb-4">Season 1</h3>
+        <p className="uppercase text-sm tracking-widest text-gray-400 mb-1">
+          Trending on Netflix
+        </p>
+        
+        <h3 className="text-xl font-bold mb-4">
+          Season 1
+        </h3>
+
         <div className="flex gap-4 overflow-x-auto pb-10">
           {videos.map((vid,i)=>(
-            <div key={i}
+            <div 
+              key={i}
               className="netflix-card min-w-[220px] h-[130px] rounded relative overflow-hidden cursor-pointer"
               onMouseEnter={e=>e.currentTarget.querySelector("video")?.play()}
               onMouseLeave={e=>{
@@ -198,16 +249,50 @@ bubblegum
                 if(v){v.pause();v.currentTime=0;}
               }}
               onClick={()=>setActiveVideo(vid.full)}>
-              <video src={vid.preview} muted loop playsInline
-                className="absolute inset-0 w-full h-full object-cover"/>
+              {vid.isNew && (
+                <div className="absolute top-2 left-2 bg-red-600 text-xs font-bold px-2 py-1 rounded new-badge">
+                  NEW EPISODE
+                </div>
+              )}
+
+              <video src={vid.preview} 
+                muted 
+                loop 
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100">
                 <PlayIcon/>
               </div>
+              
               <div className="absolute bottom-2 left-2 text-sm">{vid.title}</div>
             </div>
           ))}
         </div>
       </section>
+      <section className="px-10 relative z-10 mt-10">
+        <h3 className="text-xl font-bold mb-4 tracking-wide">
+          Because you watched “The Day We Didn’t Sleep”
+        </h3>
+        <div className="flex gap-4 overflow-x-auto pb-10">
+          {videos.slice(1).map((vid, i) => (
+      <div
+        key={i}
+        onClick={() => setActiveVideo(vid.full)}
+        className="netflix-card min-w-[200px] h-[120px] bg-neutral-800 rounded relative cursor-pointer overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition">
+          <PlayIcon />
+        </div>
+
+        <div className="absolute bottom-2 left-2 text-sm font-semibold">
+          {vid.title}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
 
       {activeVideo && (
         <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center">
@@ -226,3 +311,4 @@ ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
 </html>
+
