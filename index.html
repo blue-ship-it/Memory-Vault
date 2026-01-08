@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DISHI+HRISHIT Memory Vault</title>
+
+  <!-- React -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel (REQUIRED for JSX) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI";
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useRef } = React;
+
+    const PlayIcon = () => (
+      <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+    );
+
+    const NetflixMemoryVault = () => {
+      const [isEditing, setIsEditing] = useState(false);
+
+      const [heroContent, setHeroContent] = useState({
+        title: "To my future kids",
+        description:
+          "Little pieces of our life, saved in real time. You press play and watch us grow.",
+        thumbnail:
+          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1200"
+      });
+
+      return (
+        <div className="min-h-screen text-white">
+          <header className="fixed top-0 w-full bg-black/80 z-50 p-4 flex justify-between">
+            <h1 className="text-red-600 text-2xl font-bold">
+              DISHI + HRISHIT
+            </h1>
+            <button
+              onClick={() => setIsEditing(!isEditing)}
+              className="bg-red-600 px-4 py-1 rounded"
+            >
+              {isEditing ? "Done" : "Edit"}
+            </button>
+          </header>
+
+          <div className="relative h-screen">
+            <img
+              src={heroContent.thumbnail}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/60"></div>
+
+            <div className="absolute bottom-24 left-16 max-w-xl">
+              <h2 className="text-5xl font-bold mb-4">
+                {heroContent.title}
+              </h2>
+              <p className="text-lg mb-6">
+                {heroContent.description}
+              </p>
+
+              <button className="bg-white text-black px-6 py-3 rounded font-bold flex items-center gap-2">
+                <PlayIcon /> Play
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<NetflixMemoryVault />);
+  </script>
+</body>
+</html>
